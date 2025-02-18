@@ -5,7 +5,7 @@ import seaborn as sns
 import numpy as np
 import io
 
-def generate_bubble_plot(df, top_n, bubble_scale, cmap_choice, show_grid):
+def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid):
     df["neg_log_pval"] = -np.log10(df["PValue"])
     df = df.nsmallest(top_n, "PValue")
     df = df.sort_values(by="neg_log_pval", ascending=True)
@@ -16,7 +16,7 @@ def generate_bubble_plot(df, top_n, bubble_scale, cmap_choice, show_grid):
 
     scatter = plt.scatter(
         df["neg_log_pval"], 
-        df["KEGGpathways"], 
+        df[pathway_col], 
         s=df["Count"] * bubble_scale, 
         c=df["neg_log_pval"], 
         cmap=cmap_choice, 
@@ -37,7 +37,7 @@ def generate_bubble_plot(df, top_n, bubble_scale, cmap_choice, show_grid):
     plt.legend(title="Gene Counts", loc="upper right", bbox_to_anchor=(1.25, 1), fontsize=10)
     plt.xlabel("-log10 (p-value)", fontsize=14, fontweight='bold')
     plt.ylabel("", fontsize=14, fontweight='bold')
-    plt.title("KEGG Upregulated Genes", fontsize=14, fontweight='bold')
+    plt.title("Pathway Analysis Bubble Plot", fontsize=14, fontweight='bold')
     plt.xticks(fontsize=14, fontweight='bold')
     plt.yticks(fontsize=16, fontweight='bold')
 
@@ -47,8 +47,8 @@ def generate_bubble_plot(df, top_n, bubble_scale, cmap_choice, show_grid):
     buf.seek(0)
     return buf
 
-st.title("KEGG Bubble Plot Generator")
-st.write("Upload an Excel file to generate a KEGG bubble plot.")
+st.title("Pathway Analysis Bubble Plot Generator")
+st.write("Upload an Excel file to generate a bubble plot.")
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
 
@@ -56,11 +56,14 @@ if uploaded_file:
     df = pd.read_excel(uploaded_file)
     st.write("Preview of uploaded data:", df.head())
     
+    # Let users choose the column representing pathways
+    pathway_col = st.selectbox("Select the pathway column", df.columns, index=df.columns.get_loc("KEGGpathways") if "KEGGpathways" in df.columns else 0)
+    
     top_n = st.slider("Select number of top pathways", 10, 50, 30)
     bubble_scale = st.slider("Adjust bubble scale", 10, 100, 20)
     cmap_choice = st.selectbox("Choose color map", ["RdBu_r", "viridis", "plasma", "coolwarm", "magma"])
     show_grid = st.checkbox("Show grid lines", True)
     
     if st.button("Generate Plot"):
-        plot_buf = generate_bubble_plot(df, top_n, bubble_scale, cmap_choice, show_grid)
-        st.download_button("Download Plot as PDF", plot_buf, file_name="KEGG_BubblePlot.pdf", mime="application/pdf")
+        plot_buf = generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid)
+        st.download_button("Download Plot as PDF", plot_buf, file_name="Pathway_BubblePlot.pdf", mime="application/pdf")
