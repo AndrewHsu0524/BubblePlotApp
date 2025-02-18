@@ -5,7 +5,7 @@ import seaborn as sns
 import numpy as np
 import io
 
-def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid):
+def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid, plot_title):
     df["neg_log_pval"] = -np.log10(df["PValue"])
     df = df.nsmallest(top_n, "PValue")
     df = df.sort_values(by="neg_log_pval", ascending=True)
@@ -37,7 +37,7 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     plt.legend(title="Gene Counts", loc="upper right", bbox_to_anchor=(1.25, 1), fontsize=10)
     plt.xlabel("-log10 (p-value)", fontsize=14, fontweight='bold')
     plt.ylabel("", fontsize=14, fontweight='bold')
-    plt.title("Pathway Analysis Bubble Plot", fontsize=14, fontweight='bold')
+    plt.title(plot_title, fontsize=14, fontweight='bold')
     plt.xticks(fontsize=14, fontweight='bold')
     plt.yticks(fontsize=16, fontweight='bold')
 
@@ -63,7 +63,8 @@ if uploaded_file:
     bubble_scale = st.slider("Adjust bubble scale", 10, 100, 20)
     cmap_choice = st.selectbox("Choose color map", ["RdBu_r", "viridis", "plasma", "coolwarm", "magma"])
     show_grid = st.checkbox("Show grid lines", True)
+    plot_title = st.text_input("Enter plot title", "Pathway Analysis Bubble Plot")
     
     if st.button("Generate Plot"):
-        plot_buf = generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid)
+        plot_buf = generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid, plot_title)
         st.download_button("Download Plot as PDF", plot_buf, file_name="Pathway_BubblePlot.pdf", mime="application/pdf")
