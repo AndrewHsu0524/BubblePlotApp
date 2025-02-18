@@ -63,7 +63,9 @@ if uploaded_file:
     bubble_scale = st.slider("Adjust bubble scale", 10, 100, 20)
     cmap_choice = st.selectbox("Choose color map", ["RdBu_r", "viridis", "plasma", "coolwarm", "magma"])
     show_grid = st.checkbox("Show grid lines", True)
-    plot_title = st.text_input("Enter plot title", "Pathway Analysis Bubble Plot")
+    plot_title = st.text_input("Enter plot title (e.g., 'GO Pathway Analysis - Upregulated Genes')", "Pathway Analysis Bubble Plot")
+    
+    st.write(f"**Current Figure Title:** {plot_title}")
     
     if st.button("Generate Plot"):
         plot_buf = generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid, plot_title)
