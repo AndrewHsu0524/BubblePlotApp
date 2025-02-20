@@ -39,9 +39,9 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     legend_sizes = round_to_nearest_ten(legend_sizes)
     legend_sizes = sorted(set(legend_sizes))  # Remove duplicates after rounding
     
-    # Adjust legend placement to avoid overlapping
+    # Adjust legend placement and enlarge frame to avoid overlapping
     legend_handles = [plt.scatter([], [], s=size * bubble_scale, color="gray", alpha=0.6, label=f"Gene Count: {size}") for size in legend_sizes]
-    plt.legend(handles=legend_handles, title="Gene Counts", loc="upper left", bbox_to_anchor=(1.05, 1), fontsize=10, frameon=True)
+    plt.legend(handles=legend_handles, title="Gene Counts", loc="upper left", bbox_to_anchor=(1.05, 1), fontsize=10, frameon=True, markerscale=1.5, borderpad=2)
     
     plt.xlabel("-log10 (p-value)", fontsize=14, fontweight='bold')
     plt.ylabel("", fontsize=14, fontweight='bold')
