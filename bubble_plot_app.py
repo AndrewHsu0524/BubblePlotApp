@@ -13,11 +13,11 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     df = df.nsmallest(top_n, "PValue")
     df = df.sort_values(by="neg_log_pval", ascending=True)
 
-    plt.figure(figsize=(12, 18))
-    plt.gca().yaxis.set_tick_params(pad=2)
+    fig, ax = plt.subplots(figsize=(12, 18))
+    ax.yaxis.set_tick_params(pad=2)
     sns.set_style("whitegrid" if show_grid else "white")
 
-    scatter = plt.scatter(
+    scatter = ax.scatter(
         df["neg_log_pval"], 
         df[pathway_col], 
         s=df["Count"] * bubble_scale, 
@@ -28,9 +28,9 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     )
 
     if show_grid:
-        plt.grid(True, linestyle="--", alpha=0.7)
+        ax.grid(True, linestyle="--", alpha=0.7)
     
-    cbar = plt.colorbar(scatter, shrink=0.3, aspect=20)
+    cbar = plt.colorbar(scatter, ax=ax, shrink=0.3, aspect=20)
     cbar.set_label("-log10 (p-value)", fontsize=14, fontweight="bold")
 
     # Dynamically set legend sizes based on min/max gene counts and round to nearest ten
@@ -39,23 +39,19 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     legend_sizes = round_to_nearest_ten(legend_sizes)
     legend_sizes = sorted(set(legend_sizes))  # Remove duplicates after rounding
     
-    # Adjust legend placement and further enlarge the frame to improve readability
-    legend_handles = [plt.scatter([], [], s=size * bubble_scale, color="gray", alpha=0.6) for size in legend_sizes]
-    legend_labels = [f"Gene Count: {size}" for size in legend_sizes]
+    # Adjust legend placement, shrink frame, and bold title
+    legend_handles = [ax.scatter([], [], s=size * bubble_scale * 0.8, color="gray", alpha=0.6) for size in legend_sizes]
+    legend_labels = [f"{size}" for size in legend_sizes]
     
-    plt.legend(handles=legend_handles, labels=legend_labels, title="Gene Counts", loc="upper left", bbox_to_anchor=(1.05, 1), fontsize=10, frameon=True, markerscale=2.5, borderpad=3, labelspacing=2)
+    ax.legend(handles=legend_handles, labels=legend_labels, title="Gene Counts", title_fontsize=12, loc="upper left", bbox_to_anchor=(1.05, 1), fontsize=10, frameon=True, markerscale=1.0, borderpad=1.5, labelspacing=1.5, handletextpad=1, borderaxespad=1)
     
-    plt.xlabel("-log10 (p-value)", fontsize=14, fontweight='bold')
-    plt.ylabel("", fontsize=14, fontweight='bold')
-    plt.title(plot_title, fontsize=14, fontweight='bold')
-    plt.xticks(fontsize=14, fontweight='bold')
-    plt.yticks(fontsize=16, fontweight='bold')
+    ax.set_xlabel("-log10 (p-value)", fontsize=14, fontweight='bold')
+    ax.set_ylabel("", fontsize=14, fontweight='bold')
+    ax.set_title(plot_title, fontsize=14, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=14, width=2)
+    ax.tick_params(axis='y', labelsize=16, width=2)
 
-    buf = io.BytesIO()
-    plt.savefig(buf, format="pdf", bbox_inches='tight')
-    plt.close()
-    buf.seek(0)
-    return buf
+    return fig
 
 st.title("Pathway Analysis Bubble Plot Generator")
 st.write("Upload an Excel file to generate a bubble plot.")
@@ -77,6 +73,12 @@ if uploaded_file:
     
     st.write(f"**Current Figure Title:** {plot_title}")
     
-    if st.button("Generate Plot"):
-        plot_buf = generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid, plot_title)
-        st.download_button("Download Plot as PDF", plot_buf, file_name="Pathway_BubblePlot.pdf", mime="application/pdf")
+    # Live preview of the figure
+    fig = generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid, plot_title)
+    st.pyplot(fig)
+    
+    # Generate and download plot
+    buf = io.BytesIO()
+    fig.savefig(buf, format="pdf", bbox_inches='tight')
+    buf.seek(0)
+    st.download_button("Download Plot as PDF", buf, file_name="Pathway_BubblePlot.pdf", mime="application/pdf")
