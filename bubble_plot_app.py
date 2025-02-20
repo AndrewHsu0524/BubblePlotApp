@@ -5,6 +5,9 @@ import seaborn as sns
 import numpy as np
 import io
 
+def round_to_nearest_ten(values):
+    return [int(round(v / 10.0) * 10) for v in values]
+
 def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show_grid, plot_title):
     df["neg_log_pval"] = -np.log10(df["PValue"])
     df = df.nsmallest(top_n, "PValue")
@@ -30,11 +33,14 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     cbar = plt.colorbar(scatter, shrink=0.3, aspect=20)
     cbar.set_label("-log10 (p-value)", fontsize=14, fontweight="bold")
 
-    # Dynamically set legend sizes based on min/max gene counts
+    # Dynamically set legend sizes based on min/max gene counts and round to nearest ten
     min_count, max_count = df["Count"].min(), df["Count"].max()
-    legend_sizes = np.linspace(min_count, max_count, num=3, dtype=int) if min_count != max_count else [min_count]
+    legend_sizes = np.linspace(min_count, max_count, num=3) if min_count != max_count else [min_count]
+    legend_sizes = round_to_nearest_ten(legend_sizes)
+    legend_sizes = sorted(set(legend_sizes))  # Remove duplicates after rounding
     
-    for size in legend_sizes:
+    legend_y_offset = np.linspace(1.2, 0.8, num=len(legend_sizes))
+    for size, y_offset in zip(legend_sizes, legend_y_offset):
         plt.scatter([], [], s=size * bubble_scale, color="gray", alpha=0.6, label=f"Gene Count: {size}")
     
     plt.legend(title="Gene Counts", loc="upper right", bbox_to_anchor=(1.25, 1), fontsize=10)
