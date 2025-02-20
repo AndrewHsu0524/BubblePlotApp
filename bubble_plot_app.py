@@ -30,7 +30,10 @@ def generate_bubble_plot(df, pathway_col, top_n, bubble_scale, cmap_choice, show
     cbar = plt.colorbar(scatter, shrink=0.3, aspect=20)
     cbar.set_label("-log10 (p-value)", fontsize=14, fontweight="bold")
 
-    legend_sizes = [10, 30, 50]
+    # Dynamically set legend sizes based on min/max gene counts
+    min_count, max_count = df["Count"].min(), df["Count"].max()
+    legend_sizes = np.linspace(min_count, max_count, num=3, dtype=int) if min_count != max_count else [min_count]
+    
     for size in legend_sizes:
         plt.scatter([], [], s=size * bubble_scale, color="gray", alpha=0.6, label=f"Gene Count: {size}")
     
