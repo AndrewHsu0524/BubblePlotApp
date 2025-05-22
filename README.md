@@ -1,4 +1,4 @@
-**Pathway Analysis Bubble Plot Generator**
+![圖片](https://github.com/user-attachments/assets/c802ad05-6756-4127-8bf9-391a3ab083ef)**Pathway Analysis Bubble Plot Generator**
 
 This is a Streamlit-based web application that allows users to generate interactive bubble plots for pathway analysis. 
 Users can upload an Excel file containing pathway analysis results and dynamically adjust plot parameters with live previews.
@@ -36,11 +36,11 @@ Users can upload an Excel file containing pathway analysis results and dynamical
 
 **Example Input Data Format**
   The uploaded Excel file should contain the following columns:
-  | KEGGpathways | PValue  | Count |
-  |-------------|---------|--------|
-  | Pathway A   | 0.0023  | 25     |
-  | Pathway B   | 0.0081  | 40     |
-  | Pathway C   | 0.0150  | 60     |
+  | KEGGpathways | PValue  | Count |   %   |
+  |-------------|---------|--------|-------|
+  | Pathway A   | 0.0023  | 25     |0.54155|
+  | Pathway B   | 0.0081  | 40     |0.72945|
+  | Pathway C   | 0.0150  | 60     |1.53049|
 
 **Dependencies**
   - Python 3.8+
