@@ -1,4 +1,4 @@
-![圖片](https://github.com/user-attachments/assets/c802ad05-6756-4127-8bf9-391a3ab083ef)**Pathway Analysis Bubble Plot Generator**
+**Pathway Analysis Bubble Plot Generator**
 
 This is a Streamlit-based web application that allows users to generate interactive bubble plots for pathway analysis. 
 Users can upload an Excel file containing pathway analysis results and dynamically adjust plot parameters with live previews.
