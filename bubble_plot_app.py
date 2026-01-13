@@ -143,7 +143,7 @@ def generate_bubble_plot(
 st.set_page_config(layout="wide")
 
 st.title("KEGG Pathway Bubble Plot Generator")
-st.write("Upload an Excel file. Adjust settings in the sidebar; preview stays centered on this page.")
+st.write("Upload a KEGG analysis Excel file to generate a bubble plot. (Supports flexible DAVID column names).")
 
 uploaded_file = st.file_uploader("Upload Excel file", type=["xlsx"])
 
